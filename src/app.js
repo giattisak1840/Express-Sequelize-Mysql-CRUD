@@ -1,19 +1,24 @@
 import express from "express";
 import logger from "morgan";
-import dotenv from "dotenv";
 
-dotenv.config();
+import sequelize from "./configs/sequelize-config";
+
+import userRoutes from "./routes/user-routes";
 
 const { HOST, PORT } = process.env;
-
-const App = () => {
+const App = async () => {
   try {
     const app = express();
     app.use(logger("dev"));
 
+    await sequelize.authenticate();
+    console.log("Connection has been established successfully.");
+
     app.get("/", (req, res) => {
       res.status(200).send("Server is OK");
     });
+
+    app.use("/user", userRoutes);
 
     app.listen(PORT, () => {
       console.log(`Server is listening on ${HOST}:${PORT}`);
